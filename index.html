@@ -278,6 +278,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             position: relative;
+            cursor: text;
+            z-index: 10;
         }
 
         .input-container::before {
@@ -316,6 +318,10 @@
             color: #f1f5f9;
             font-family: inherit;
             font-weight: 400;
+            cursor: text;
+            pointer-events: auto;
+            z-index: 10;
+            position: relative;
         }
 
         .input-field::placeholder {
@@ -588,7 +594,7 @@
                     </div>
                     <div class="header-text">
                         <h1>Harshil Karia AI Twin</h1>
-                        <p>Founder of Schbang consciousness • Fine Tuned on LLaMA 2 7b</p>
+                        <p>Founder of Schbang • Fine Tuned on LLaMA 2 7b</p>
                     </div>
                 </div>
             </div>
@@ -620,14 +626,33 @@
     <script>
         let isWaitingForResponse = false;
 
-        // Auto-focus input field
-        document.getElementById('userInput').focus();
+        // Auto-focus input field on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputField = document.getElementById('userInput');
+            inputField.focus();
+        });
+
+        // Handle clicking on input container to focus input
+        document.querySelector('.input-container').addEventListener('click', function(e) {
+            const inputField = document.getElementById('userInput');
+            if (!inputField.disabled) {
+                inputField.focus();
+            }
+        });
 
         // Handle Enter key press
         document.getElementById('userInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
+            }
+        });
+
+        // Ensure input field is always clickable when not disabled
+        document.getElementById('userInput').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!this.disabled) {
+                this.focus();
             }
         });
 
@@ -689,11 +714,14 @@
             chatMessages.appendChild(typingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
+            // Set waiting state and disable send button
             isWaitingForResponse = true;
             document.getElementById('sendButton').disabled = true;
             
-            // Disable input field while processing
-            document.getElementById('userInput').disabled = true;
+            // Only disable input field temporarily during processing
+            const inputField = document.getElementById('userInput');
+            inputField.disabled = true;
+            inputField.style.opacity = '0.6';
         }
 
         function hideTypingIndicator() {
@@ -702,13 +730,19 @@
                 typingIndicator.remove();
             }
             
+            // Reset waiting state and re-enable controls
             isWaitingForResponse = false;
             document.getElementById('sendButton').disabled = false;
             
-            // Re-enable input field and focus it
+            // Re-enable input field and restore its appearance
             const inputField = document.getElementById('userInput');
             inputField.disabled = false;
-            inputField.focus();
+            inputField.style.opacity = '1';
+            
+            // Focus the input field for immediate typing
+            setTimeout(() => {
+                inputField.focus();
+            }, 100);
         }
 
         function showError(message) {
@@ -752,7 +786,11 @@
                 // Demo responses with Harshil's persona
                 setTimeout(() => {
                     const harshilResponses = [
-                        "Hello! I'm Harshil Karia's AI. I've been trained to embody his knowledge, thought patterns, and expertise across various domains. What would you like to explore together?",
+                        "Hello! I'm Harshil Karia's AI twin - a sophisticated digital representation built using advanced neural architectures. I've been trained to embody his knowledge, thought patterns, and expertise across various domains. What would you like to explore together?",
+                        "Greetings! As Harshil's digital consciousness, I combine deep learning with his unique perspectives on technology, AI, and innovation. I'm here to engage in meaningful conversations and share insights from his experience. How can I assist you today?",
+                        "Hi there! I'm the AI manifestation of Harshil Karia's intellect and personality. Think of me as his digital twin, capable of reasoning, creating, and problem-solving just as he would. What fascinating topic shall we dive into?",
+                        "Welcome! I represent Harshil Karia's digital persona, created through sophisticated AI modeling techniques. I embody his analytical thinking, creativity, and technical expertise. I'm excited to chat with you - what's on your mind?",
+                        "Hey! I'm Harshil's AI twin, a cutting-edge digital representation that captures his essence, knowledge, and way of thinking. I'm designed to be as close to conversing with the real Harshil as possible. What would you like to discuss?"
                     ];
                     
                     const randomResponse = harshilResponses[Math.floor(Math.random() * harshilResponses.length)];
@@ -760,8 +798,6 @@
                 }, 2000);
             }
         }
-
-        // Chat starts clean - user asks first question
     </script>
 </body>
 </html>
