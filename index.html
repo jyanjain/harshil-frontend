@@ -754,11 +754,10 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // This is where you'll integrate your Python backend
         async function callLlamaModel(userMessage) {
             try {
                 // Replace this URL with your actual backend endpoint
-                const response = await fetch('https://084dc132d857.ngrok-free.app/chat', {
+                const response = await fetch('https://74314483f0d0.ngrok-free.app/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
